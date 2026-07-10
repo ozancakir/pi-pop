@@ -1,6 +1,6 @@
 {
   "name": "@ozancakir/pi-pop",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publishConfig": {
     "access": "public"
   },
@@ -36,6 +36,7 @@
   "pi": {
     "extensions": [
       "./extensions/pi-pop/index.ts"
-    ]
+    ],
+    "image": "https://raw.githubusercontent.com/ozancakir/pi-pop/main/screenshots/with-pi-pop.gif"
   }
 }
