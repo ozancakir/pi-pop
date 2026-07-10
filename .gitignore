@@ -1,0 +1,9 @@
+# AI / agent config — never publish
+.claude/
+AGENTS.md
+CLAUDE.md
+.cursor/
+
+# deps / os
+node_modules/
+.DS_Store

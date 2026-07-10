@@ -1,0 +1,38 @@
+{
+  "name": "pi-pop",
+  "version": "0.1.0",
+  "description": "Pop open a floating viewer to read Pi coding agent panels: Shift+Alt+arrow (or /pop) shows any collapsed panel's content without expanding it or snapping the scroll (cross-platform, works over SSH); scroll with the mouse wheel. Ask the agent to \"show the hypa result\" and it opens the viewer on that panel. Which panels appear is configurable by talking to the agent (pi-pop-config tool).",
+  "type": "module",
+  "license": "MIT",
+  "author": "Ozan Cakir <m.ozancakir@gmail.com>",
+  "homepage": "https://github.com/ozancakir/pi-pop#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ozancakir/pi-pop.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ozancakir/pi-pop/issues"
+  },
+  "keywords": [
+    "pi-package",
+    "pi",
+    "pi-coding-agent",
+    "tui",
+    "terminal",
+    "extension"
+  ],
+  "files": [
+    "extensions",
+    "README.md",
+    "LICENSE"
+  ],
+  "peerDependencies": {
+    "@earendil-works/pi-tui": "*",
+    "typebox": "*"
+  },
+  "pi": {
+    "extensions": [
+      "./extensions/pi-pop/index.ts"
+    ]
+  }
+}
