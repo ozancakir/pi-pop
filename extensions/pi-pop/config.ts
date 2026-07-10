@@ -5,7 +5,7 @@
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
-import { config, state, DEFAULT_KEYS } from "./shared.ts";
+import { config, state, DEFAULT_KEYS, DEFAULT_MAX_LINES } from "./shared.ts";
 
 export const CONFIG_PATH = path.join(os.homedir(), ".pi", "pi-pop.json");
 
@@ -16,6 +16,8 @@ export function loadConfig() {
     config.exclude = Array.isArray(raw.exclude) ? raw.exclude : [];
     config.keys =
       Array.isArray(raw.keys) && raw.keys.length ? raw.keys : [...DEFAULT_KEYS];
+    config.maxLines =
+      Number.isInteger(raw.maxLines) && raw.maxLines >= 0 ? raw.maxLines : DEFAULT_MAX_LINES;
   } catch {
     // no config yet — defaults stand
   }
@@ -36,6 +38,15 @@ export function applyPopConfig(action, pattern) {
   const needsPattern = action === "show" || action === "hide" || action === "remove";
   if (needsPattern && !p) return `"${action}" needs a pattern`;
   switch (action) {
+    case "maxlines": {
+      const n = parseInt(p, 10);
+      if (Number.isFinite(n) && n >= 0) config.maxLines = n;
+      saveConfig();
+      state.activeTui?.requestRender?.();
+      return config.maxLines
+        ? `collapsed panels capped at ${config.maxLines} lines`
+        : "collapsed line cap off";
+    }
     case "show":
       if (!config.include.includes(p)) config.include.push(p);
       break;
@@ -51,9 +62,15 @@ export function applyPopConfig(action, pattern) {
       config.exclude = [];
       break;
     case "list":
-      return `panels — show: ${config.include.join(", ") || "none"} · hide: ${config.exclude.join(", ") || "none"}`;
+      return [
+        "pi-pop config",
+        `  show:     ${config.include.join(", ") || "none"}`,
+        `  hide:     ${config.exclude.join(", ") || "none"}`,
+        `  maxLines: ${config.maxLines || "off"}`,
+        `  open:     ${config.keys.join(", ")}`,
+      ].join("\n");
     default:
-      return `unknown action "${action}" (use show, hide, remove, list, reset)`;
+      return `unknown action "${action}" (use show, hide, remove, maxlines, list, reset)`;
   }
   saveConfig();
   state.activeTui?.requestRender?.();

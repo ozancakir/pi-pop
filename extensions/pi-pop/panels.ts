@@ -173,35 +173,50 @@ export function decorateExpandable(component, theme) {
   const originalRender = component.render.bind(component);
   component.__piPopRender = originalRender; // used by the content viewer
   component.render = (width) => {
-    const lines = originalRender(width);
+    let lines = originalRender(width);
     if (!Array.isArray(lines) || lines.length === 0) return lines;
+    const expanded = currentExpanded(component);
     const hasMore = probeHasMore(component, originalRender, width, lines);
-    if (hasMore) markable.add(component);
+    // Cap collapsed panels at config.maxLines (0 = off) to keep the conversation
+    // tight. The viewer still shows everything (it renders via __piPopRender).
+    const clip = config.maxLines > 0 && !expanded && lines.length > config.maxLines;
+    const hide = hasMore || clip;
+    if (hide) markable.add(component);
     else markable.delete(component);
     // Hidden by config: drop the marker (still viewable, just not flagged).
     if (config.exclude.length && anyMatch(config.exclude, titleOfLines(lines))) {
-      return lines;
+      return clip ? lines.slice(0, config.maxLines) : lines;
     }
-    if (!hasMore) return lines;
-    // Put the marker in a left gutter and shift content right at constant width;
-    // reuse the line's own background so no default-bg gap shows.
+    if (!hide) return lines;
     const marker = currentExpanded(component) ? EXPANDED : COLLAPSED;
     const gutter = visibleWidth(marker) + 1; // marker + one space
-    for (let i = 0; i < Math.min(lines.length, 6); i++) {
-      const line = lines[i];
-      if (typeof line !== "string") return lines;
+    // When clipped, show the first maxLines rows and add a footer telling how many
+    // were hidden; the marker still rides the first content line.
+    const body = clip ? lines.slice(0, config.maxLines) : lines;
+    // Put the marker in a left gutter and shift content right at constant width;
+    // reuse the line's own background so no default-bg gap shows.
+    let out = body;
+    for (let i = 0; i < Math.min(body.length, 6); i++) {
+      const line = body[i];
+      if (typeof line !== "string") break;
       const base = line.replace(/ +((?:\x1b\[[0-9;]*m)*)$/, "$1");
       const used = visibleWidth(base);
       if (used === 0) continue; // blank padding row
       const rightPad = width - gutter - used;
       if (rightPad < 0) continue; // no room for a left gutter
       const bg = (line.match(/\x1b\[48;[0-9;]*m/) || [""])[0];
-      const decorated = [...lines];
-      decorated[i] =
-        bg + theme.fg("dim", marker) + bg + " " + base + bg + " ".repeat(rightPad);
-      return decorated;
+      out = [...body];
+      out[i] = bg + theme.fg("dim", marker) + bg + " " + base + bg + " ".repeat(rightPad);
+      break;
     }
-    return lines;
+    if (clip) {
+      const hidden = lines.length - config.maxLines;
+      out = [
+        ...out,
+        " " + theme.fg("dim", `…${hidden} more line${hidden === 1 ? "" : "s"} (pi-pop)`),
+      ];
+    }
+    return out;
   };
   return true;
 }

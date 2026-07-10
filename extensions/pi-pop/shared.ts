@@ -30,11 +30,15 @@ export const hasMoreCache = new WeakMap();
  * User config, persisted by config.ts:
  * - `include`/`exclude`: which panels the viewer lists (patterns on the title).
  * - `keys`: the shortcut(s) that open the viewer, matched with `matchesKey`
- *   (any of pi's key specs, e.g. "ctrl+p", "alt+space"). Defaults to the four
- *   Shift+Alt+Arrow combos.
+ *   (any of pi's key specs, e.g. "ctrl+p", "alt+space"). Defaults to
+ *   Shift+Alt+Down (works in VS Code / kitty terminals) plus Ctrl+Q (a single
+ *   byte that Terminal.app forwards where modifier+arrow combos are stripped).
  */
-export const DEFAULT_KEYS = ["shift+alt+up", "shift+alt+down", "shift+alt+left", "shift+alt+right"];
-export const config = { include: [], exclude: [], keys: [...DEFAULT_KEYS] };
+export const DEFAULT_KEYS = ["shift+alt+down", "ctrl+q"];
+// `maxLines`: cap the height of collapsed panels in the conversation (0 = off,
+// default 5). The viewer still reads full content (via the unclipped __piPopRender).
+export const DEFAULT_MAX_LINES = 5;
+export const config = { include: [], exclude: [], keys: [...DEFAULT_KEYS], maxLines: DEFAULT_MAX_LINES };
 
 /**
  * Cross-module mutable refs. A single object (shared reference) so any module can

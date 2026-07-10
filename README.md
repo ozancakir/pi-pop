@@ -18,7 +18,7 @@ pi install npm:@ozancakir/pi-pop
 
 ## Use it
 
-Press **Shift + Alt + any arrow** (or run **`/pop`**) to open the viewer. Inside:
+Press **Shift + Alt + ↓** or **Ctrl + Q** (or run **`/pop`**) to open the viewer. Inside:
 
 | Key | Action |
 |-----|--------|
@@ -55,19 +55,33 @@ Or do it directly:
 /pop-config show python3     # force-show panels whose title matches
 /pop-config hide Grep        # hide matching panels
 /pop-config remove python3   # drop a rule you added
-/pop-config list             # show current rules
-/pop-config reset            # clear
+/pop-config maxlines 3       # cap collapsed panels at 3 lines (0 = off)
+/pop-config list             # show current config
+/pop-config reset            # clear rules
 ```
 
 Rules are case-insensitive text or regex matched against a panel's first line, saved to `~/.pi/pi-pop.json`.
 
+## Keep the conversation tight
+
+Long panels take up a lot of room even when collapsed, so pi-pop caps them at **5 lines by default**, with a dim `…N more lines (pi-pop)` footer — the viewer still reads the full thing. Change the cap:
+
+```
+/pop-config maxlines 3     # or any number
+/pop-config maxlines 0     # turn the cap off
+```
+
+Or just ask: *"cap collapsed panels at 3 lines"*.
+
 ## Change the shortcut
 
-Prefer a different key than Shift+Alt+Arrow? Set `keys` in `~/.pi/pi-pop.json` (any of Pi's key specs — restart Pi after editing):
+The default is **Shift+Alt+↓** and **Ctrl+Q** — two keys because no single one survives every terminal (macOS Terminal.app strips modifier+arrow combos; VS Code grabs some single Ctrl keys). Use whichever fires in your terminal, or set your own in `~/.pi/pi-pop.json` (any of Pi's key specs — restart Pi after editing):
 
 ```json
-{ "keys": ["ctrl+p"] }
+{ "keys": ["shift+alt+down", "ctrl+q"] }
 ```
+
+In a stubborn terminal, **`/pop`** always works with no key at all.
 
 ## Why a pop-up?
 

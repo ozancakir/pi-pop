@@ -55,7 +55,7 @@ export default function (pi) {
   });
 
   pi.registerCommand("pop-config", {
-    description: "Which panels the viewer lists: show|hide|remove|list|reset <pattern>",
+    description: "Configure the viewer: show|hide|remove <pattern> · maxlines <n> · list|reset",
     handler: (args, ctx) => {
       const parts = (args || "list").trim().split(/\s+/);
       const action = parts.shift() || "list";
@@ -105,21 +105,23 @@ export default function (pi) {
     name: "pi-pop-config",
     label: "Pop config",
     description:
-      "Configure which panels the pi-pop viewer lists. Actions: 'show' <pattern> " +
-      "force-shows panels whose first line (title) matches even without hidden " +
-      "content; 'hide' <pattern> hides matching panels (and their marker); " +
-      "'remove' <pattern> deletes a pattern; 'list' shows current config; 'reset' " +
-      "clears it. Patterns are case-insensitive text or regex matched against the " +
-      "panel title (e.g. 'python3', '\\\\$ python', 'Grep', 'Read').",
+      "Configure the pi-pop viewer. Actions: 'show' <pattern> force-shows panels " +
+      "whose first line (title) matches even without hidden content; 'hide' " +
+      "<pattern> hides matching panels (and their marker); 'remove' <pattern> " +
+      "deletes a pattern; 'maxlines' <n> caps how many lines collapsed panels show " +
+      "in the conversation (0 = off; the viewer still shows everything); 'list' " +
+      "shows current config (rules, maxLines, and the open shortcut keys); 'reset' " +
+      "clears the panel rules. Patterns are case-insensitive text or regex matched " +
+      "against the panel title (e.g. 'python3', '\\\\$ python', 'Grep', 'Read').",
     promptGuidelines: [
-      "Use pi-pop-config when the user asks to show or hide certain outputs in the panel viewer — e.g. \"show python3 outputs in panels\" → {action:'show', pattern:'python3'}; \"stop showing grep results\" → {action:'hide', pattern:'Grep'}. Report the returned summary back to the user.",
+      "Use pi-pop-config when the user asks to show/hide certain outputs in the panel viewer — e.g. \"show python3 outputs in panels\" → {action:'show', pattern:'python3'}; \"stop showing grep results\" → {action:'hide', pattern:'Grep'} — or to limit how tall collapsed panels are — e.g. \"cap collapsed panels at 3 lines\" → {action:'maxlines', pattern:'3'}. Report the returned summary back to the user.",
     ],
     parameters: Type.Object({
-      action: Type.String({ description: "One of: show, hide, remove, list, reset" }),
+      action: Type.String({ description: "One of: show, hide, remove, maxlines, list, reset" }),
       pattern: Type.Optional(
         Type.String({
           description:
-            "Case-insensitive text or regex matched against a panel's first line (title). Required for show/hide/remove.",
+            "For show/hide/remove: case-insensitive text or regex matched against a panel's first line (title). For maxlines: the integer line cap (0 = off).",
         }),
       ),
     }),
