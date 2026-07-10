@@ -9,7 +9,7 @@ Pi's conversation fills up with collapsible panels (tool calls, outputs, context
 ## Install
 
 ```bash
-pi install npm:pi-pop
+pi install npm:@ozancakir/pi-pop
 ```
 
 <sub>Or from git: `pi install git:github.com/ozancakir/pi-pop`</sub>
